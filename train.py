@@ -8,7 +8,7 @@ def train():
     train_dataset = load_dataset('tatsu-lab/alpaca', split='train')
     tokenizer = AutoTokenizer.from_pretrained("Saledforce/xgen-7b-8k-base", trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained("Saledforce/xgen-7b-8k-base", load_in_4bit=True, torch_dtype=torch.float16, device_map="auto")
-    model.resize_token_embedding(len(tokenizer))
+    model.resize_token_embeddings(len(tokenizer))
     model = prepare_model_for_int8_training(model)
     peft_config=LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, bias='none', task_type="CAUSAL_LM")
     model = get_peft_model(model, peft_config)
@@ -39,3 +39,6 @@ def train():
 
     trainer.train()
     trainer.push_to_hub()
+
+if __name__=="__main__":
+    train()
